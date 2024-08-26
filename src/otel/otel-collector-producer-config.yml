@@ -1,0 +1,35 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+
+processors:
+
+exporters:
+  kafka/metrics:
+    brokers:
+      - broker:29092
+    protocol_version: 2.0.0
+    topic: metrics_topic
+#    encoding: raw
+  kafka/trace:
+    brokers:
+      - broker:29092
+    protocol_version: 2.0.0
+    topic: traces_topic
+    encoding: jaeger_json
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [kafka/trace]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [kafka/metrics]

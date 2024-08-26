@@ -1,0 +1,19 @@
+version: "3.5"
+name: monitor-otel-collector-kafka-producer
+services:
+
+  otel-collector:
+    image: otel/opentelemetry-collector
+    container_name: otel-collector
+    command: ["--config=/etc/config.yml"]
+    volumes:
+      - ./otel/otel-collector-producer-config.yml:/etc/config.yml
+    ports:
+      - "4317:4317" # OTLP gRPC receiver port
+      - "4318:4318"
+      - "8889:8889" # Promentheus exporter metrics
+    networks:
+      - default_bridge
+networks:
+  default_bridge:
+    external: true
