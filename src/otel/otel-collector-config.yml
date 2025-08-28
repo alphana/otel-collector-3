@@ -1,0 +1,47 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  debug:
+    verbosity: detailed
+
+  influxdb:
+    endpoint: http://influxdb:8086
+    timeout: 500ms
+    org: obs-org
+    bucket: observation
+    token: MyInitialAdminToken0==
+    span_dimensions:
+      - service.name
+      - span.name
+    log_record_dimensions:
+      - service.name
+    metrics_schema: telegraf-prometheus-v1
+
+    sending_queue:
+      enabled: true
+      num_consumers: 3
+      queue_size: 10
+
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 3s
+      max_elapsed_time: 10s
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [influxdb]
