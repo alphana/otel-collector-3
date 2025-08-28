@@ -14,7 +14,6 @@ services:
       - "4318:4318"
       - "8889:8889" # Promentheus exporter metrics
     links:
-      - broker
       - influxdb2
     networks:
       - default_bridge

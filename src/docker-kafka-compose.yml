@@ -21,7 +21,7 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
-    depends_on:
+    links:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
@@ -32,7 +32,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     healthcheck:
-      test: /kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server broker:9092 || exit 1
+      test: /kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server broker:29092 || exit 1
       interval: 1s
       timeout: 60s
       retries: 3
@@ -51,7 +51,7 @@ services:
     image: confluentinc/cp-kafka:7.2.1.arm64
     networks:
       - default_bridge
-    depends_on:
+    links:
       - broker
     entrypoint: [ '/bin/sh', '-c' ]
     command: |
@@ -94,13 +94,12 @@ services:
       - "4318"
       - "8889" # Promentheus exporter metrics
     links:
-      - broker
-      - influxdb2
+      - init-topics
     networks:
       - default_bridge
 
   otel-collector-producer:
-    image: otel/opentelemetry-collector
+    image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
     container_name: otel-collector-producer
     command: ["--config=/etc/config.yml"]
     volumes:
@@ -110,8 +109,7 @@ services:
       - "4318:4318"
       - "8889:8889" # Promentheus exporter metrics
     links:
-      - broker
-      - influxdb2
+      - init-topics
     networks:
       - default_bridge
 
