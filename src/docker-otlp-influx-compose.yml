@@ -1,11 +1,12 @@
-version: "3.5"
+
 name: monitor-otel-collector-influx
 
 services:
   
-  otel-collector:
-    image: otel/opentelemetry-collector
-    container_name: otel-collector-producer
+
+  otel-consumer:
+    image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
+    container_name: otel-collector-consumer
     command: ["--config=/etc/config.yml"]
     volumes:
       - ./otel/otel-collector-config.yml:/etc/config.yml
@@ -17,7 +18,6 @@ services:
       - influxdb2
     networks:
       - default_bridge
-
   influxdb2:
     image: influxdb:2
     container_name: influxdb
